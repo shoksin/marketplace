@@ -2,6 +2,7 @@ package main
 
 import (
 	"api-gateway/internal/auth"
+	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"
@@ -38,6 +39,15 @@ func main() {
 		}
 	}()
 
+	r := gin.Default()
+
 	authClient := auth.NewClient(authConn)
-	authHandler :=
+	authHandler := auth.NewHandler(authClient)
+	auth.SetupRoutes(r, authHandler)
+
+	middleware := auth.NewMiddleware(authClient)
+
+	productClient := product.NewClient(productConn)
+	productHandler := product.NewHandler(productClient, &middleware)
+
 }
