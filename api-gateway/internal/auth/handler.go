@@ -2,6 +2,7 @@ package auth
 
 import (
 	"context"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shoksin/marketplace-protos/proto/pbauth"
 	"log"
@@ -24,7 +25,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		log.Printf("Ошибка валидации запроса: %v", err)
+		log.Printf("Request validation error: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -38,7 +39,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 	})
 
 	if err != nil {
-		log.Printf("Ошибка при вызове gRPC сервиса: %v", err)
+		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})
@@ -55,9 +56,11 @@ func (h *Handler) Login(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
+		fmt.Printf("Validation error: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
+		return
 	}
 
 	res, err := h.Client.Client.Login(context.Background(), &pbauth.LoginRequest{
@@ -65,7 +68,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		log.Printf("Ошибка при вызове gRPC сервиса: %v", err)
+		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})
@@ -84,7 +87,7 @@ func (h *Handler) AdminRegister(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		log.Printf("Ошибка валидации запроса: %v", err)
+		log.Printf("Request validation error: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -96,7 +99,7 @@ func (h *Handler) AdminRegister(ctx *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		log.Printf("Ошибка при вызове gRPC сервиса: %v", err)
+		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})
@@ -113,7 +116,7 @@ func (h *Handler) AdminLogin(ctx *gin.Context) {
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		log.Printf("Ошибка валидации запроса: %v", err)
+		log.Printf("Request validation error: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -125,7 +128,7 @@ func (h *Handler) AdminLogin(ctx *gin.Context) {
 		Password: req.Password,
 	})
 	if err != nil {
-		log.Printf("Ошибка при вызове gRPC сервиса: %v", err)
+		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})

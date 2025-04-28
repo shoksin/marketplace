@@ -1,16 +1,16 @@
 package order
 
 import (
-	"github.com/shoksin/marketplace-protos/proto/pbproduct"
+	"github.com/shoksin/marketplace-protos/proto/pborder"
 	"google.golang.org/grpc"
 )
 
 type Client struct {
-	client pbproduct.ProductServiceClient
+	client pborder.OrderServiceClient
 }
 
 func NewClient(conn *grpc.ClientConn) *Client {
 	return &Client{
-		client: pbproduct.NewProductServiceClient(conn),
+		client: pborder.NewOrderServiceClient(conn),
 	}
 }

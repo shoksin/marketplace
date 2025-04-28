@@ -9,7 +9,7 @@ type Client struct {
 	client pbproduct.ProductServiceClient
 }
 
-func NewProductClient(conn *grpc.ClientConn) *Client {
+func NewClient(conn *grpc.ClientConn) *Client {
 	return &Client{
 		client: pbproduct.NewProductServiceClient(conn),
 	}

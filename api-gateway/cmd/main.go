@@ -3,6 +3,7 @@ package main
 import (
 	"api-gateway/internal/auth"
 	"api-gateway/internal/order"
+	"api-gateway/internal/product"
 	"github.com/gin-gonic/gin"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
@@ -49,10 +50,15 @@ func main() {
 	middleware := auth.NewMiddleware(authClient)
 
 	productClient := product.NewClient(productConn)
-	productHandler := product.NewHandler(productClient, middleware)
-	product.SetupRoutes(r, productHandler)
+	productHandler := product.NewHandler(productClient)
+	product.SetupRoutes(r, productHandler, middleware)
 
 	orderClient := order.NewClient(orderConn)
 	orderHandler := order.NewHandler(orderClient)
 	order.SetupRoutes(r, orderHandler, middleware)
+
+	err = r.Run(":8000")
+	if err != nil {
+		log.Fatalf("Failed to start server: %v", err)
+	}
 }
