@@ -3,7 +3,6 @@ package order
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/shoksin/marketplace-protos/proto/pborder"
-	"github.com/shoksin/marketplace-protos/proto/pbproduct"
 	"log"
 	"net/http"
 )
@@ -22,7 +21,6 @@ func (h *Handler) CreateOrder(ctx *gin.Context) {
 	var req struct {
 		ProductID int64 `json:"product_id" binding:"required"`
 		Quantity  int64 `json:"quantity" binding:"required"`
-		UserID    int64 `json:"user_id" binding:"required"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -32,16 +30,33 @@ func (h *Handler) CreateOrder(ctx *gin.Context) {
 		})
 	}
 
+	val, exists := ctx.Get("user_id")
+	if !exists {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "unauthorized",
+		})
+		return
+	}
+
+	userId, ok := val.(int64)
+	if !ok {
+		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "invalid user id format",
+		})
+	}
+
 	res, err := h.client.client.CreateOrder(ctx, &pborder.CreateOrderRequest{
 		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
-		UserID:    req.UserID,
+		UserID:    userId,
 	})
 
-	if err != nil {
+	if err != nil || res == nil {
 		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})
 	}
+
+	ctx.JSON(http.StatusCreated, res)
 }

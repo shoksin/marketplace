@@ -4,7 +4,7 @@ go 1.23.6
 
 require (
 	github.com/gin-gonic/gin v1.10.0
-	github.com/shoksin/marketplace-protos v0.0.5
+	github.com/shoksin/marketplace-protos v0.0.6
 	google.golang.org/grpc v1.72.0
 )
 
