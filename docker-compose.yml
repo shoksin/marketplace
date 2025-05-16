@@ -1,7 +1,68 @@
-version: "3.8"
+version: "2.4"
 
 services:
   api-gateway:
-  auth:
-  order:
-  product:
+    build: ./api-gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - auth-service
+    environment:
+      PORT: 8000
+      AUTH_SERVICE: auth-service:50051
+      PRODUCT_SERVICE: product-service:50052
+      ORDER_SERVICE: order-service:50053
+
+  auth-service:
+    build: ./auth
+    ports:
+      - "50051:50051"
+    environment:
+      PORT: 50051
+      DATABASE_CONFIG: postgres://postgres:postgres@auth-db:5432/auth-service
+      SECRET_KEY: a4ad9cf952b90fcae94810c0ba5e97b187026cb0efe94b74e32023b413dbca24187888536fcf22df3c1eb48e9148572aea54a55893ed21dcfdda0342c573729e38888472f817754ded380ca028da6539351928adfe369e5500090306faecba1d0855fc3f1d79e8781a1340fa0ad45eb31bb311af528523b561f3504a07f7615433625baa2266860cfd2d6a5d1b6b048b2c9c90f109548b36c9e5fd5d6796a9dc1195b68ea1beeb5c9af463b4d05516ac69764a77dc3e7e7a9740ab482b5b880275a33084d907cc19619cf60134f9ecca7c2487f79e9ce2256a7fce89d358dcde7a0694dc7acd7867ee679a67d94ccd4b5c7d5b6342522b75e9a109686630d7e8
+    depends_on:
+      auth-db:
+        condition: service_healthy
+    restart: always
+
+  #order-service:
+  #  ports:
+  #/\   - "50052:50052"
+   # depends_on:
+   #   - order-db
+  #product-service:
+  # build:  ./product
+  #  ports:
+  #    - "50053:50053"
+  #  depends_on:
+  #    - product-db
+
+  auth-db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: auth-service
+    ports:
+      - "5433:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  #order-db:
+  #  image: postgres:latest
+  #  ports:
+  #    - "5434:5432"
+  #product-db:
+  #  image: postgres:latest
+  #  ports:
+  #    - "5435:5432"
+  #  environment:
+  #    POSTGRES_USER: postgres
+  #    POSTGRES_PASSWORD: postgres
+  #    POSTGRES_DB: order-service
+  #  restart: always

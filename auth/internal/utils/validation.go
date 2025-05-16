@@ -1,4 +1,4 @@
-package validation
+package utils
 
 import (
 	"errors"
@@ -6,7 +6,13 @@ import (
 	"regexp"
 )
 
-func ValidatePassword(password string) error {
+type Validator struct{}
+
+func NewValidator() *Validator {
+	return &Validator{}
+}
+
+func (v *Validator) ValidatePassword(password string) error {
 	if len(password) < 8 || len(password) > 32 {
 		return errors.New("password must be between 8 and 32 characters")
 	}
@@ -18,7 +24,7 @@ func ValidatePassword(password string) error {
 	return nil
 }
 
-func ValidateEmail(email string) error {
+func (v *Validator) ValidateEmail(email string) error {
 	_, err := mail.ParseAddress(email)
 	if err != nil {
 		return errors.New("invalid email")

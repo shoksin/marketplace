@@ -1,45 +1,107 @@
 package service
 
 import (
+	"auth/internal/dto"
 	"auth/internal/models"
-	"auth/internal/repository"
 	"context"
 	"fmt"
 )
 
-type UserService interface {
-	Register(ctx context.Context, user *models.User) (*models.User, error)
-	Login(ctx context.Context, user *models.User) (*models.User, error)
-	AdminRegister(ctx context.Context, admin *models.Admin) (*models.Admin, error)
-	AdminLogin(ctx context.Context, admin *models.Admin) (*models.Admin, error)
+type UserRepository interface {
+	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
+	CreateAdmin(ctx context.Context, admin *models.Admin) (*models.Admin, error)
+	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+	GetAdminByUsername(ctx context.Context, username string) (*models.Admin, error)
 }
 
-type userService struct {
-	repository repository.UserRepository
+type TokenGenerator interface {
+	GenerateToken(user *models.User) (string, error)
+	GenerateAdminToken(admin *models.Admin) (string, error)
+	ValidateToken(tokenString string) (*models.JWTClaims, error)
 }
 
-func NewUserService(repo repository.UserRepository) UserService {
-	return &userService{repository: repo}
+type PasswordHasher interface {
+	HashPassword(password string) (string, error)
+	CheckPasswordHash(password, hash string) bool
 }
 
-func (u *userService) Register(ctx context.Context, user *models.User) (*models.User, error) {
-	userResponse, err := u.repository.Register(ctx, user)
-	if err != nil {
-		fmt.Println("userService.register err: ", err)
-		return nil, err
+type UserService struct {
+	repository     UserRepository
+	tokenGenerator TokenGenerator
+	passwordHasher PasswordHasher
+}
+
+func NewUserService(repo UserRepository, tokenGenerator TokenGenerator, passwordHasher PasswordHasher) *UserService {
+	return &UserService{
+		repository:     repo,
+		tokenGenerator: tokenGenerator,
+		passwordHasher: passwordHasher,
 	}
-	return userResponse, nil
 }
 
-func (u *userService) Login(ctx context.Context, user *models.User) (*models.User, error) {
-	fmt.Println("userService.login user: ", user)
-	return &models.User{}, nil
+func (u *UserService) Register(ctx context.Context, user *models.User) (*models.User, error) {
+	hashedPassword, err := u.passwordHasher.HashPassword(user.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+	user.Password = hashedPassword
+
+	resp, err := u.repository.CreateUser(ctx, user)
+	if err != nil {
+		return nil, fmt.Errorf("register user error: %w", err)
+	}
+	return resp, nil
 }
 
-func (u *userService) AdminRegister(ctx context.Context, admin *models.Admin) (*models.Admin, error) {
-	return &models.Admin{}, nil
+func (u *UserService) Login(ctx context.Context, user *models.User) (*dto.LoginResponse, error) {
+	dbUser, err := u.repository.GetUserByEmail(ctx, user.Email)
+	if err != nil {
+		return nil, fmt.Errorf("user not found: %w", err)
+	}
+
+	if u.passwordHasher.CheckPasswordHash(user.Password, dbUser.Password) {
+		return nil, fmt.Errorf("invalid password")
+	}
+
+	token, err := u.tokenGenerator.GenerateToken(user)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate token: %w", err)
+	}
+
+	return &dto.LoginResponse{
+		Token: token,
+	}, nil
 }
 
-func (u *userService) AdminLogin(ctx context.Context, admin *models.Admin) (*models.Admin, error) {
-	return &models.Admin{}, nil
+func (u *UserService) AdminRegister(ctx context.Context, admin *models.Admin) (*models.Admin, error) {
+	hashedPassword, err := u.passwordHasher.HashPassword(admin.Password)
+	if err != nil {
+		return nil, fmt.Errorf("failed to hash password: %w", err)
+	}
+	admin.Password = hashedPassword
+	resp, err := u.repository.CreateAdmin(ctx, admin)
+	if err != nil {
+		return nil, fmt.Errorf("register admin error: %w", err)
+	}
+	return resp, nil
+}
+
+func (u *UserService) AdminLogin(ctx context.Context, admin *models.Admin) (*dto.LoginResponse, error) {
+	dbAdmin, err := u.repository.GetAdminByUsername(ctx, admin.Username)
+	if err != nil {
+		return nil, fmt.Errorf("admin not found: %w", err)
+	}
+
+	if u.passwordHasher.CheckPasswordHash(admin.Password, dbAdmin.Password) {
+		return nil, fmt.Errorf("invalid password")
+	}
+
+	token, err := u.tokenGenerator.GenerateAdminToken(admin)
+	if err != nil {
+		return nil, fmt.Errorf("failed to generate token: %w", err)
+	}
+
+	return &dto.LoginResponse{
+		Token: token,
+	}, nil
 }

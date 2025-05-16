@@ -7,6 +7,7 @@ import (
 
 func LoadEnv() {
 	if err := godotenv.Load("./internal/config/.env"); err != nil {
-		log.Fatal("Error loading .env file" + err.Error())
+		log.Println("Error loading .env file" + err.Error())
+		log.Println("Continue work")
 	}
 }
