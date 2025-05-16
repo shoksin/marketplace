@@ -5,6 +5,7 @@ import (
 	"auth/internal/initializer"
 	"auth/internal/repository"
 	"auth/internal/service"
+	"auth/internal/utils"
 	"github.com/shoksin/marketplace-protos/proto/pbauth"
 	"google.golang.org/grpc"
 	"log"
@@ -12,7 +13,7 @@ import (
 )
 
 func init() {
-	initializer.LoadEnv()
+	//initializer.LoadEnv()
 	initializer.InitDB()
 }
 
@@ -26,8 +27,10 @@ func main() {
 
 	db := initializer.DB
 	userRepo := repository.NewUserRepository(db)
-	userService := service.NewUserService(userRepo)
-	userHandler := handler.NewAuthHandler(userService)
+	tokenGenerator := utils.NewTokenGenerator()
+	passwordHasher := utils.NewPasswordHasher()
+	userService := service.NewUserService(userRepo, tokenGenerator, passwordHasher)
+	userHandler := handler.NewAuthHandler(userService, tokenGenerator)
 
 	pbauth.RegisterAuthServiceServer(grpcServer, userHandler)
 	log.Println("AuthService is running on port 50051...")

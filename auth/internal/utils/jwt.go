@@ -8,18 +8,17 @@ import (
 	"time"
 )
 
-type JWTClaims struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
-	jwt.RegisteredClaims
+type JWTGenerator struct {
 }
 
-func GenerateToken(user *models.User) (string, error) {
+func NewTokenGenerator() *JWTGenerator {
+	return &JWTGenerator{}
+}
+
+func (tkGen *JWTGenerator) GenerateToken(user *models.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
-	claims := JWTClaims{
+	claims := models.JWTClaims{
 		ID:       user.ID,
 		Username: user.Username,
 		Password: user.Password,
@@ -45,10 +44,10 @@ func GenerateToken(user *models.User) (string, error) {
 	return signedToken, nil
 }
 
-func GenerateAdminToken(admin *models.Admin) (string, error) {
+func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
-	claims := JWTClaims{
+	claims := models.JWTClaims{
 		ID:       admin.ID,
 		Username: admin.Username,
 		Password: admin.Password,
@@ -73,17 +72,17 @@ func GenerateAdminToken(admin *models.Admin) (string, error) {
 	return signedToken, nil
 }
 
-func ValidateToken(tokenString string) (*JWTClaims, error) {
+func (tkGen *JWTGenerator) ValidateToken(tokenString string) (*models.JWTClaims, error) {
 	secretSigningKey := os.Getenv("SIGNING_KEY")
 
-	token, err := jwt.ParseWithClaims(tokenString, &JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(tokenString, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretSigningKey), nil
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	claims, ok := token.Claims.(*JWTClaims)
+	claims, ok := token.Claims.(*models.JWTClaims)
 	if !ok {
 		return nil, fmt.Errorf("invalid token claims")
 	}

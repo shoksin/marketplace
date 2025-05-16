@@ -1,8 +1,8 @@
 package handler
 
 import (
+	"auth/internal/dto"
 	"auth/internal/models"
-	"auth/internal/service"
 	"context"
 	"github.com/shoksin/marketplace-protos/proto/pbauth"
 	"google.golang.org/grpc/codes"
@@ -11,16 +11,30 @@ import (
 	"net/http"
 )
 
-type AuthHandler struct {
+type UserService interface {
+	Register(ctx context.Context, user *models.User) (*models.User, error)
+	Login(ctx context.Context, user *models.User) (*dto.LoginResponse, error)
+	AdminRegister(ctx context.Context, admin *models.Admin) (*models.Admin, error)
+	AdminLogin(ctx context.Context, admin *models.Admin) (*dto.LoginResponse, error)
+}
+
+type TokenGenerator interface {
+	GenerateToken(user *models.User) (string, error)
+	GenerateAdminToken(admin *models.Admin) (string, error)
+	ValidateToken(tokenString string) (*models.JWTClaims, error)
+}
+
+type GrpcAuthHandler struct {
 	pbauth.UnimplementedAuthServiceServer
-	service service.UserService
+	service      UserService
+	jwtGenerator TokenGenerator
 }
 
-func NewAuthHandler(service service.UserService) *AuthHandler {
-	return &AuthHandler{service: service}
+func NewAuthHandler(service UserService, generator TokenGenerator) *GrpcAuthHandler {
+	return &GrpcAuthHandler{service: service, jwtGenerator: generator}
 }
 
-func (h *AuthHandler) Register(ctx context.Context, req *pbauth.RegisterRequest) (*pbauth.RegisterResponse, error) {
+func (h *GrpcAuthHandler) Register(ctx context.Context, req *pbauth.RegisterRequest) (*pbauth.RegisterResponse, error) {
 	user := &models.User{
 		Username: req.Username,
 		Password: req.Password,
@@ -29,10 +43,8 @@ func (h *AuthHandler) Register(ctx context.Context, req *pbauth.RegisterRequest)
 
 	res, err := h.service.Register(ctx, user)
 	if err != nil {
-		log.Println(err)
-		return &pbauth.RegisterResponse{
-			Error: err.Error(),
-		}, nil
+		log.Println("Register error:", err)
+		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pbauth.RegisterResponse{
@@ -41,7 +53,7 @@ func (h *AuthHandler) Register(ctx context.Context, req *pbauth.RegisterRequest)
 	}, nil
 }
 
-func (h *AuthHandler) AdminRegister(ctx context.Context, req *pbauth.AdminRegisterRequest) (*pbauth.RegisterResponse, error) {
+func (h *GrpcAuthHandler) AdminRegister(ctx context.Context, req *pbauth.AdminRegisterRequest) (*pbauth.RegisterResponse, error) {
 	admin := &models.Admin{
 		Username: req.Username,
 		Password: req.Password,
@@ -49,7 +61,7 @@ func (h *AuthHandler) AdminRegister(ctx context.Context, req *pbauth.AdminRegist
 
 	res, err := h.service.AdminRegister(ctx, admin)
 	if err != nil {
-		log.Println(err)
+		log.Println("AdminRegister error:", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
@@ -58,25 +70,49 @@ func (h *AuthHandler) AdminRegister(ctx context.Context, req *pbauth.AdminRegist
 		Id:     res.ID,
 	}, nil
 }
-func (h *AuthHandler) Login(ctx context.Context, req *pbauth.LoginRequest) (*pbauth.LoginResponse, error) {
-	user := &models.User{
+func (h *GrpcAuthHandler) Login(ctx context.Context, req *pbauth.LoginRequest) (*pbauth.LoginResponse, error) {
+	loginReq := &models.User{
 		Email:    req.Email,
 		Password: req.Password,
 	}
 
-	res, err := h.service.Login(ctx, user)
+	res, err := h.service.Login(ctx, loginReq)
 	if err != nil {
-		log.Println(err)
+		log.Println("Login error:", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pbauth.LoginResponse{
-		Token: res.
+		Token:  res.Token,
+		Status: http.StatusOK,
 	}, nil
 }
-func (h *AuthHandler) AdminLogin(context.Context, *pbauth.AdminLoginRequest) (*pbauth.LoginResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method AdminLogin not implemented")
+func (h *GrpcAuthHandler) AdminLogin(ctx context.Context, req *pbauth.AdminLoginRequest) (*pbauth.LoginResponse, error) {
+	loginReq := &models.Admin{
+		Username: req.Username,
+		Password: req.Password,
+	}
+
+	res, err := h.service.AdminLogin(ctx, loginReq)
+	if err != nil {
+		log.Println("AdminLogin error:", err)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pbauth.LoginResponse{
+		Token:  res.Token,
+		Status: http.StatusOK,
+	}, nil
 }
-func (h *AuthHandler) Validate(context.Context, *pbauth.ValidateRequest) (*pbauth.ValidateResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method Validate not implemented")
+func (h *GrpcAuthHandler) Validate(ctx context.Context, req *pbauth.ValidateRequest) (*pbauth.ValidateResponse, error) {
+	claims, err := h.jwtGenerator.ValidateToken(req.Token)
+	if err != nil {
+		log.Println("Validate error:", err)
+		return nil, status.Error(codes.Internal, err.Error())
+	}
+
+	return &pbauth.ValidateResponse{
+		UserID: claims.ID,
+		Status: http.StatusOK,
+	}, nil
 }

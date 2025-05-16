@@ -1,6 +1,7 @@
 package initializer
 
 import (
+	"fmt"
 	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"log"
@@ -10,10 +11,12 @@ import (
 var DB *sqlx.DB
 
 func InitDB() {
-	dsn := os.Getenv("DATABASE_URL")
+	dsn := os.Getenv("DATABASE_CONFIG")
 	if dsn == "" {
 		log.Fatal("error loading .env file")
 	}
+
+	fmt.Println("dsn:", dsn)
 
 	var err error
 	DB, err = sqlx.Connect("pgx", dsn)
