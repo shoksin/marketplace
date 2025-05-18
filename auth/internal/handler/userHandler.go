@@ -39,6 +39,7 @@ func (h *GrpcAuthHandler) Register(ctx context.Context, req *pbauth.RegisterRequ
 		Username: req.Username,
 		Password: req.Password,
 		Email:    req.Email,
+		Birthday: req.Birthday,
 	}
 
 	res, err := h.service.Register(ctx, user)

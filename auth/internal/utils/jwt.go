@@ -31,9 +31,9 @@ func (tkGen *JWTGenerator) GenerateToken(user *models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	secretSigningKey := os.Getenv("SIGNING_KEY")
+	secretSigningKey := os.Getenv("SECRET_KEY")
 	if secretSigningKey == "" {
-		return "", fmt.Errorf("SIGNING_KEY environment variable not set")
+		return "", fmt.Errorf("SECRET_KEY environment variable not set")
 	}
 
 	signedToken, err := token.SignedString([]byte(secretSigningKey))
@@ -59,9 +59,9 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	secretSigningKey := os.Getenv("SIGNING_KEY")
+	secretSigningKey := os.Getenv("SECRET_KEY")
 	if secretSigningKey == "" {
-		return "", fmt.Errorf("SIGNING_KEY environment variable not set")
+		return "", fmt.Errorf("SECRET_KEY environment variable not set")
 	}
 
 	signedToken, err := token.SignedString([]byte(secretSigningKey))
@@ -73,7 +73,7 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 }
 
 func (tkGen *JWTGenerator) ValidateToken(tokenString string) (*models.JWTClaims, error) {
-	secretSigningKey := os.Getenv("SIGNING_KEY")
+	secretSigningKey := os.Getenv("SECRET_KEY")
 
 	token, err := jwt.ParseWithClaims(tokenString, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretSigningKey), nil

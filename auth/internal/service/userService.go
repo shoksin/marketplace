@@ -40,6 +40,11 @@ func NewUserService(repo UserRepository, tokenGenerator TokenGenerator, password
 }
 
 func (u *UserService) Register(ctx context.Context, user *models.User) (*models.User, error) {
+	userExists, err := u.repository.GetUserByEmail(ctx, user.Email)
+	if userExists != nil && userExists.Email != "" {
+		return nil, fmt.Errorf("user with email %s already exists", user.Email)
+	}
+
 	hashedPassword, err := u.passwordHasher.HashPassword(user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
@@ -59,7 +64,7 @@ func (u *UserService) Login(ctx context.Context, user *models.User) (*dto.LoginR
 		return nil, fmt.Errorf("user not found: %w", err)
 	}
 
-	if u.passwordHasher.CheckPasswordHash(user.Password, dbUser.Password) {
+	if !u.passwordHasher.CheckPasswordHash(user.Password, dbUser.Password) {
 		return nil, fmt.Errorf("invalid password")
 	}
 
@@ -74,6 +79,11 @@ func (u *UserService) Login(ctx context.Context, user *models.User) (*dto.LoginR
 }
 
 func (u *UserService) AdminRegister(ctx context.Context, admin *models.Admin) (*models.Admin, error) {
+	adminExists, err := u.repository.GetAdminByUsername(ctx, admin.Username)
+	if adminExists != nil && adminExists.Username != "" {
+		return nil, fmt.Errorf("admin with username %s already exists", admin.Username)
+	}
+
 	hashedPassword, err := u.passwordHasher.HashPassword(admin.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
@@ -92,7 +102,7 @@ func (u *UserService) AdminLogin(ctx context.Context, admin *models.Admin) (*dto
 		return nil, fmt.Errorf("admin not found: %w", err)
 	}
 
-	if u.passwordHasher.CheckPasswordHash(admin.Password, dbAdmin.Password) {
+	if !u.passwordHasher.CheckPasswordHash(admin.Password, dbAdmin.Password) {
 		return nil, fmt.Errorf("invalid password")
 	}
 

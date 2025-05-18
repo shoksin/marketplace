@@ -3,7 +3,10 @@ FROM golang:1.23.6 AS build
 WORKDIR /app
 
 COPY go.mod go.sum ./
-RUN go mod download
+# RUN go mod download
+RUN go env -w GOPROXY=https://goproxy.io,direct && go mod download
+# т.к была такая ошибка
+# go: github.com/gabriel-vasile/mimetype@v1.4.3: Get "https://storage.googleapis.com/proxy-golang-org-prod/...": net/http: TLS handshake timeout
 
 COPY . .
 

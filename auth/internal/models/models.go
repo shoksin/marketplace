@@ -2,19 +2,27 @@ package models
 
 import (
 	"github.com/golang-jwt/jwt/v5"
+	"time"
 )
 
 type User struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-	Email    string `json:"email"`
+	ID        int64      `json:"id" db:"user_id"`
+	Username  string     `json:"username" db:"username"`
+	Password  string     `json:"password" db:"password"`
+	Email     string     `json:"email" db:"email"`
+	Birthday  string     `json:"birthday" db:"birthday"`
+	CreatedAt *time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at" db:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at" db:"deleted_at"`
 }
 
 type Admin struct {
-	ID       int64  `json:"id"`
-	Username string `json:"username"`
-	Password string `json:"password"`
+	ID        int64      `json:"id" db:"admin_id"`
+	Username  string     `json:"username" db:"username"`
+	Password  string     `json:"password" db:"password"`
+	CreatedAt *time.Time `json:"created_at" db:"created_at"`
+	UpdatedAt *time.Time `json:"updated_at" db:"updated_at"`
+	DeletedAt *time.Time `json:"deleted_at" db:"deleted_at"`
 }
 
 type JWTClaims struct {
