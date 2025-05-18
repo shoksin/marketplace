@@ -26,17 +26,24 @@ services:
         condition: service_healthy
     restart: always
 
+  product-service:
+    build: ./product
+    ports:
+      - "50052:50052"
+    environment:
+      PORT: 50052
+      DATABASE_CONFIG: postgres://postgres:postgres@product-db:5432/product-service
+    depends_on:
+      product-db:
+        condition: service_healthy
+    restart: always
+
+
   #order-service:
   #  ports:
-  #/\   - "50052:50052"
+  #/\   - "50053:50053"
    # depends_on:
    #   - order-db
-  #product-service:
-  # build:  ./product
-  #  ports:
-  #    - "50053:50053"
-  #  depends_on:
-  #    - product-db
 
   auth-db:
     image: postgres:latest
@@ -53,16 +60,22 @@ services:
       timeout: 3s
       retries: 5
 
+  product-db:
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: order-service
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
   #order-db:
   #  image: postgres:latest
   #  ports:
   #    - "5434:5432"
-  #product-db:
-  #  image: postgres:latest
-  #  ports:
-  #    - "5435:5432"
-  #  environment:
-  #    POSTGRES_USER: postgres
-  #    POSTGRES_PASSWORD: postgres
-  #    POSTGRES_DB: order-service
-  #  restart: always

@@ -1,3 +1,5 @@
+DIRS = api-gateway auth order product
+
 start:
 	docker-compose up
 start-rebuild:
@@ -10,3 +12,8 @@ clean-images:
 	docker rmi $(shell docker images -q)
 clean-containers:
 	docker rm $(shell docker ps -aq)
+get-last-proto:
+	for dir in $(DIRS); do \
+    		echo "Выполнение в директории: $$dir"; \
+    		( cd $$dir && go get github.com/shoksin/marketplace-protos@v0.0.9 ); \
+    	done

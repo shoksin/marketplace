@@ -1,7 +1,6 @@
 package initializer
 
 import (
-	_ "github.com/jackc/pgx/v5/stdlib"
 	"github.com/jmoiron/sqlx"
 	"log"
 	"os"
@@ -21,9 +20,9 @@ func InitDB() {
 		log.Fatalf("error sqlx.Connect: %v", err)
 	}
 
-	if err := DB.Ping(); err != nil {
-		log.Fatalf("error ping database: %v", err)
+	if err = DB.Ping(); err != nil {
+		log.Fatalf("error ping: %v", err)
 	}
 
-	log.Println("Database connected.")
+	log.Println("Connected to database")
 }
