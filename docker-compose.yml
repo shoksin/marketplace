@@ -38,7 +38,6 @@ services:
         condition: service_healthy
     restart: always
 
-
   #order-service:
   #  ports:
   #/\   - "50053:50053"
@@ -67,7 +66,7 @@ services:
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: order-service
+      POSTGRES_DB: product-service
     restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]

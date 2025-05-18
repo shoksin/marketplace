@@ -8,6 +8,8 @@ stop:
 	docker-compose down
 open-auth-db:
 	docker exec -it marketplace_auth-db_1 psql -U postgres -d auth-service
+open-product-db:
+	docker exec -it marketplace_product-db_1 psql -U postgres product-service
 clean-images:
 	docker rmi $(shell docker images -q)
 clean-containers:

@@ -21,9 +21,9 @@ func NewHandler(client *Client) *Handler {
 
 func (h *Handler) CreateProduct(ctx *gin.Context) {
 	var req struct {
-		Name  string `json:"name" binding:"required"`
-		Price int64  `json:"price" binding:"required"`
-		Stock int64  `json:"stock" binding:"required"`
+		Name  string  `json:"name" binding:"required"`
+		Price float64 `json:"price" binding:"required"`
+		Stock int64   `json:"stock" binding:"required"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
