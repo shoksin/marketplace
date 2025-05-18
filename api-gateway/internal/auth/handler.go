@@ -22,6 +22,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 		UserName string `json:"username" binding:"required"`
 		Email    string `json:"email" binding:"required,email"`
 		Password string `json:"password" binding:"required"`
+		Birthday string `json:"birthday" binding:"required"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -36,6 +37,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 		Username: req.UserName,
 		Email:    req.Email,
 		Password: req.Password,
+		Birthday: req.Birthday,
 	})
 
 	if err != nil {
@@ -111,7 +113,7 @@ func (h *Handler) AdminRegister(ctx *gin.Context) {
 
 func (h *Handler) AdminLogin(ctx *gin.Context) {
 	var req struct {
-		UserName string `json:"username" binding:"required"`
+		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
 	}
 
@@ -124,7 +126,7 @@ func (h *Handler) AdminLogin(ctx *gin.Context) {
 	}
 
 	res, err := h.Client.Client.AdminLogin(context.Background(), &pbauth.AdminLoginRequest{
-		Username: req.UserName,
+		Username: req.Username,
 		Password: req.Password,
 	})
 	if err != nil {

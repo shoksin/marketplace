@@ -4,11 +4,16 @@ type RegisterRequest struct {
 	Username string
 	Password string
 	Email    string
+	Birthday string
 }
 
 type AdminRegisterRequest struct {
 	Username string
 	Password string
+}
+
+type RegisterResponse struct {
+	ID int64
 }
 
 type LoginRequest struct {

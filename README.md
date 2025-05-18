@@ -6,7 +6,7 @@
 ![Диграмма проекта](images/diagram.png) 
 
 ## Database schema:
-![Схема базы данных](images/DbSchema.png)
+![Схема базы данных](images/DBSchema.png)
 
 ## Generated protobuf files:
 ## [marketplace-protos](https://github.com/shoksin/marketplace-protos) ##

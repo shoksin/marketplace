@@ -7,7 +7,7 @@ require (
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/jmoiron/sqlx v1.4.0
 	github.com/joho/godotenv v1.5.1
-	github.com/shoksin/marketplace-protos v0.0.6
+	github.com/shoksin/marketplace-protos v0.0.7
 	golang.org/x/crypto v0.33.0
 	google.golang.org/grpc v1.72.0
 )
