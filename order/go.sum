@@ -1,9 +1,13 @@
+github.com/google/uuid v1.6.0 h1:NIvaJDMOsjHA8n1jAhLSgzrAzy1Hgr+hNrb57e+94F0=
+github.com/google/uuid v1.6.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/shoksin/marketplace-protos v0.0.7 h1:z0FeUwinj7qdx4j0eN2oIZuKFtOrUdbBUmvjlDX6Xis=
 github.com/shoksin/marketplace-protos v0.0.7/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
 github.com/shoksin/marketplace-protos v0.0.8 h1:rFGQO9Xonw/XhzxgCN6ycU4a4yB3aajGY3FeYNmC9T8=
 github.com/shoksin/marketplace-protos v0.0.8/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
 github.com/shoksin/marketplace-protos v0.0.9 h1:HOYNsJVWslHymLD62HAiFwC4jHzgFYbAL23S0cu4S30=
 github.com/shoksin/marketplace-protos v0.0.9/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
+github.com/shoksin/marketplace-protos v0.0.10 h1:tWskRV503MjaQtjdQeAbfZMTSlHOKeL1xx3QJy8j69Q=
+github.com/shoksin/marketplace-protos v0.0.10/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
 golang.org/x/net v0.35.0 h1:T5GQRQb2y08kTAByq9L4/bz8cipCdA8FbRTXewonqY8=
 golang.org/x/net v0.35.0/go.mod h1:EglIi67kWsHKlRzzVMUD93VMSWGFOMSZgxFjparz1Qk=
 golang.org/x/sys v0.30.0 h1:QjkSwP/36a20jFYWkSue1YwXzLmsV5Gfq7Eiy72C1uc=

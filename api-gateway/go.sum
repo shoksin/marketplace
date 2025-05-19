@@ -61,6 +61,8 @@ github.com/shoksin/marketplace-protos v0.0.8 h1:rFGQO9Xonw/XhzxgCN6ycU4a4yB3aajG
 github.com/shoksin/marketplace-protos v0.0.8/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
 github.com/shoksin/marketplace-protos v0.0.9 h1:HOYNsJVWslHymLD62HAiFwC4jHzgFYbAL23S0cu4S30=
 github.com/shoksin/marketplace-protos v0.0.9/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
+github.com/shoksin/marketplace-protos v0.0.10 h1:tWskRV503MjaQtjdQeAbfZMTSlHOKeL1xx3QJy8j69Q=
+github.com/shoksin/marketplace-protos v0.0.10/go.mod h1:bsn/WPcVf+8ms/5JsnrNr9qpB0s15YqIOaku4PjpCpI=
 github.com/stretchr/objx v0.1.0/go.mod h1:HFkY916IF+rwdDfMAkV7OtwuqBVzrE8GR6GFx+wExME=
 github.com/stretchr/objx v0.4.0/go.mod h1:YvHI0jy2hoMjB+UWwv71VJQ9isScKT/TqJzVSSt89Yw=
 github.com/stretchr/objx v0.5.0/go.mod h1:Yh+to48EsGEfYuaHDzXPcE3xhTkx73EhmCGUpEOglKo=

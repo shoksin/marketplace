@@ -6,7 +6,6 @@ import (
 	"github.com/shoksin/marketplace-protos/proto/pbproduct"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type Handler struct {
@@ -64,11 +63,10 @@ func (h *Handler) CreateProduct(ctx *gin.Context) {
 }
 
 func (h *Handler) FindProduct(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
-		log.Printf("Get id from param error: %v", err)
+	id := ctx.Param("id")
+	if id == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error": "cannot get product id",
 		})
 		return
 	}

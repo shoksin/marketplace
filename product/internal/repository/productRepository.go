@@ -26,9 +26,9 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *models.P
 	return product, nil
 }
 
-func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID int64) (*models.Product, error) {
+func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID string) (*models.Product, error) {
 	var product models.Product
-	query := `SELECT product_id, name, price, stock, created_at FROM products WHERE product_id = $1;`
+	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products WHERE product_id = $1;`
 	if err := r.DB.GetContext(ctx, &product, query, ID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("product not found")
@@ -41,5 +41,15 @@ func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID int64) (*
 
 func (r *ProductRepository) FindAllProducts(ctx context.Context) ([]*models.Product, error) {
 	var products []*models.Product
+	rows, err := r.DB.QueryContext(ctx, "SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products")
+	defer rows.Close()
+
+	for rows.Next() {
+		var product models.Product
+		if err = rows.Scan(&product.ID, &product.Name, &product.Price, &product.Stock, &product.CreatedAt, &product.UpdatedAt, &product.DeletedAt); err != nil {
+			return nil, err
+		}
+		products = append(products, &product)
+	}
 	return products, nil
 }

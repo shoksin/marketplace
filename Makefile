@@ -17,5 +17,5 @@ clean-containers:
 get-last-proto:
 	for dir in $(DIRS); do \
     		echo "Выполнение в директории: $$dir"; \
-    		( cd $$dir && go get github.com/shoksin/marketplace-protos@v0.0.9 ); \
+    		( cd $$dir && go get github.com/shoksin/marketplace-protos@v0.0.10 ); \
     	done

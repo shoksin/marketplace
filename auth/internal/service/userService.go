@@ -5,6 +5,7 @@ import (
 	"auth/internal/models"
 	"context"
 	"fmt"
+	"github.com/google/uuid"
 )
 
 type UserRepository interface {
@@ -51,6 +52,8 @@ func (u *UserService) Register(ctx context.Context, user *models.User) (*models.
 	}
 	user.Password = hashedPassword
 
+	user.ID = uuid.New().String()
+
 	resp, err := u.repository.CreateUser(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("register user error: %w", err)
@@ -89,6 +92,9 @@ func (u *UserService) AdminRegister(ctx context.Context, admin *models.Admin) (*
 		return nil, fmt.Errorf("failed to hash password: %w", err)
 	}
 	admin.Password = hashedPassword
+
+	admin.ID = uuid.New().String()
+
 	resp, err := u.repository.CreateAdmin(ctx, admin)
 	if err != nil {
 		return nil, fmt.Errorf("register admin error: %w", err)

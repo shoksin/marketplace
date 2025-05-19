@@ -11,7 +11,7 @@ import (
 
 type ProductService interface {
 	CreateProduct(context.Context, *models.Product) (*models.Product, error)
-	FindOne(context.Context, int64) (*models.Product, error)
+	FindOne(context.Context, string) (*models.Product, error)
 	FindAll(context.Context) ([]*models.Product, error)
 }
 type GrpcProductHandler struct {

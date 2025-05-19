@@ -4,12 +4,13 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"github.com/google/uuid"
 	"product/internal/models"
 )
 
 type ProductRepository interface {
 	CreateProduct(context.Context, *models.Product) (*models.Product, error)
-	FindOneProductByID(context.Context, int64) (*models.Product, error)
+	FindOneProductByID(context.Context, string) (*models.Product, error)
 	FindAllProducts(context.Context) ([]*models.Product, error)
 }
 
@@ -28,10 +29,12 @@ func (s *ProductService) CreateProduct(ctx context.Context, product *models.Prod
 		return nil, errors.New("invalid product data")
 	}
 
+	product.ID = uuid.New().String()
+
 	return s.repository.CreateProduct(ctx, product)
 }
 
-func (s *ProductService) FindOne(ctx context.Context, ID int64) (*models.Product, error) {
+func (s *ProductService) FindOne(ctx context.Context, ID string) (*models.Product, error) {
 	resp, err := s.repository.FindOneProductByID(ctx, ID)
 	if err != nil {
 		return nil, fmt.Errorf("find product by id: %w", err)
