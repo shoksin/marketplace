@@ -17,7 +17,10 @@ FROM alpine:3.14
 
 WORKDIR /app
 
+# бинарник
 COPY --from=builder /app/out/dist /app/dist
+# и файл с переменными
+COPY --from=builder /app/.env /app/.env
 
 RUN chmod +x /app/dist
 

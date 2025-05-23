@@ -12,6 +12,10 @@ import (
 	"time"
 )
 
+func init() {
+	//initializer.LoadConfig()
+}
+
 func mustNewClient(target string) *grpc.ClientConn {
 	cp := grpc.ConnectParams{
 		MinConnectTimeout: 5 * time.Second,
