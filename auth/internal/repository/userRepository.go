@@ -19,8 +19,8 @@ func NewUserRepository(db *sqlx.DB) *UserRepository {
 }
 
 func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (*models.User, error) {
-	query := `INSERT INTO users (username, email, password, birthday, created_at) VALUES ($1, $2, $3, $4, NOW()) RETURNING user_id, created_at`
-	err := r.DB.QueryRowContext(ctx, query, user.Username, user.Email, user.Password, user.Birthday).Scan(&user.ID, &user.CreatedAt)
+	query := `INSERT INTO users (user_id, username, email, password, birthday, created_at) VALUES ($1, $2, $3, $4, $5, NOW()) RETURNING user_id, created_at`
+	err := r.DB.QueryRowContext(ctx, query, user.ID, user.Username, user.Email, user.Password, user.Birthday).Scan(&user.ID, &user.CreatedAt)
 	if err != nil {
 		return nil, err
 	}
@@ -28,8 +28,8 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) (*mo
 }
 
 func (r *UserRepository) CreateAdmin(ctx context.Context, admin *models.Admin) (*models.Admin, error) {
-	query := `INSERT INTO admins (username, password, created_at) VALUES ($1, $2, NOW()) RETURNING admin_id, created_at`
-	err := r.DB.QueryRowContext(ctx, query, admin.Username, admin.Password).Scan(&admin.ID, &admin.CreatedAt)
+	query := `INSERT INTO admins (admin_id, username, password, created_at) VALUES ($1, $2, $3, NOW()) RETURNING admin_id, created_at`
+	err := r.DB.QueryRowContext(ctx, query, admin.ID, admin.Username, admin.Password).Scan(&admin.ID, &admin.CreatedAt)
 	if err != nil {
 		return nil, err
 	}

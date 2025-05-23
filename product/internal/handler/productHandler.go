@@ -5,6 +5,7 @@ import (
 	"github.com/shoksin/marketplace-protos/proto/pbproduct"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"log"
 	"net/http"
 	"product/internal/models"
 )
@@ -83,6 +84,7 @@ func (h *GrpcProductHandler) FindAll(ctx context.Context, req *pbproduct.FindAll
 }
 
 func (h *GrpcProductHandler) DecreaseStock(ctx context.Context, req *pbproduct.DecreaseStockRequest) (*pbproduct.DecreaseStockResponse, error) {
+	log.Printf("req.Id = %v, req.Quantity = %v, req.UserID = %v\n", req.Id, req.Quantity, req.OrderID)
 	_, err := h.service.DecreaseStock(ctx, req.Id, req.Quantity)
 	if err != nil {
 		return nil, status.Error(codes.NotFound, err.Error())

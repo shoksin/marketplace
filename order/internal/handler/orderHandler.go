@@ -30,6 +30,7 @@ func NewGrpcOrderHandler(service OrderService, productClient *client.ProductServ
 
 func (h *GrpcOrderHandler) CreateOrder(ctx context.Context, req *pborder.CreateOrderRequest) (*pborder.CreateOrderResponse, error) {
 	product, err := (h.productClient).FindOne(ctx, req.ProductID)
+	log.Printf("product.ID = %v", product.Data.Id)
 	if err != nil {
 		log.Printf("FindOne error: %v\n", err)
 		return &pborder.CreateOrderResponse{

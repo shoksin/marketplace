@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
+	"log"
 	"product/internal/models"
 )
 
@@ -28,6 +29,7 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *models.P
 
 func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID string) (*models.Product, error) {
 	var product models.Product
+	log.Printf("1 FindOneProductByID ID = %s\n", ID)
 	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products WHERE product_id = $1;`
 	if err := r.DB.GetContext(ctx, &product, query, ID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
@@ -35,6 +37,7 @@ func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID string) (
 		}
 		return nil, err
 	}
+	log.Printf("2 FindOneProductByID ID = %s\n", ID)
 
 	return &product, nil
 }
@@ -58,7 +61,7 @@ func (r *ProductRepository) FindAllProducts(ctx context.Context) ([]*models.Prod
 func (r *ProductRepository) DecreaseStock(ctx context.Context, productID string, stock int64) (*models.Product, error) {
 	var product models.Product
 	query := `UPDATE products SET stock = $1 WHERE product_id = $2 RETURNING product_id, stock;`
-	if err := r.DB.GetContext(ctx, &product, query, stock, productID); err != nil {
+	if err := r.DB.QueryRowContext(ctx, query, stock, productID).Scan(&product.ID, &product.Stock); err != nil {
 		return &product, err
 	}
 

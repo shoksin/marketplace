@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 	"product/internal/models"
 )
 
@@ -52,6 +53,7 @@ func (s *ProductService) FindAll(ctx context.Context) ([]*models.Product, error)
 }
 
 func (s *ProductService) DecreaseStock(ctx context.Context, productID string, quantity int64) (*models.Product, error) {
+	log.Printf("DecreaseStock productID: %v, quantity: %v", productID, quantity)
 	orderStat, err := s.repository.FindOneProductByID(ctx, productID)
 	if err != nil {
 		return nil, fmt.Errorf("find product by id: %w", err)
