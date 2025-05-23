@@ -23,13 +23,12 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	db := initializer.DB
-	productRepo := repository.NewProductRepository(db)
+	productRepo := repository.NewProductRepository(initializer.DB)
 	productService := service.NewProductService(productRepo)
 	productHandler := handler.NewProductHandler(productService)
 
 	pbproduct.RegisterProductServiceServer(grpcServer, productHandler)
-	
+
 	if err := grpcServer.Serve(listener); err != nil {
 		log.Fatalf("failed to serve: %v", err)
 	}

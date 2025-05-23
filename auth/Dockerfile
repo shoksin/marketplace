@@ -1,4 +1,4 @@
-FROM golang:1.23.6 AS build
+FROM golang:1.23.6 AS builder
 
 WORKDIR /app
 
@@ -14,7 +14,7 @@ FROM alpine:3.14
 
 WORKDIR /app
 
-COPY --from=build /app/out/dist /app/dist
+COPY --from=builder /app/out/dist /app/dist
 
 RUN chmod +x /app/dist
 

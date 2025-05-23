@@ -32,23 +32,27 @@ func (h *Handler) CreateOrder(ctx *gin.Context) {
 
 	val, exists := ctx.Get("user_id")
 	if !exists {
+		log.Printf("Request validation error: user_id = %v", val)
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"error": "unauthorized",
 		})
 		return
 	}
 
-	userId, ok := val.(string)
+	userID, ok := val.(string)
 	if !ok {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"error": "invalid user id format",
 		})
+		return
 	}
+
+	log.Println("userID:", userID)
 
 	res, err := h.client.client.CreateOrder(ctx, &pborder.CreateOrderRequest{
 		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
-		UserID:    userId,
+		UserID:    userID,
 	})
 
 	if err != nil || res == nil {

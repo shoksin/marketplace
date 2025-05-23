@@ -112,6 +112,8 @@ func (h *GrpcAuthHandler) Validate(ctx context.Context, req *pbauth.ValidateRequ
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
+	log.Printf("UserID in after Validate: %v\n\n\n\n", claims.ID)
+	
 	return &pbauth.ValidateResponse{
 		UserID: claims.ID,
 		Status: http.StatusOK,

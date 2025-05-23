@@ -41,7 +41,8 @@ func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID string) (
 
 func (r *ProductRepository) FindAllProducts(ctx context.Context) ([]*models.Product, error) {
 	var products []*models.Product
-	rows, err := r.DB.QueryContext(ctx, "SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products")
+	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products`
+	rows, err := r.DB.QueryContext(ctx, query)
 	defer rows.Close()
 
 	for rows.Next() {
@@ -52,4 +53,14 @@ func (r *ProductRepository) FindAllProducts(ctx context.Context) ([]*models.Prod
 		products = append(products, &product)
 	}
 	return products, nil
+}
+
+func (r *ProductRepository) DecreaseStock(ctx context.Context, productID string, stock int64) (*models.Product, error) {
+	var product models.Product
+	query := `UPDATE products SET stock = $1 WHERE product_id = $2 RETURNING product_id, stock;`
+	if err := r.DB.GetContext(ctx, &product, query, stock, productID); err != nil {
+		return &product, err
+	}
+
+	return &product, nil
 }

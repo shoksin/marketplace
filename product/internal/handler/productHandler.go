@@ -13,6 +13,7 @@ type ProductService interface {
 	CreateProduct(context.Context, *models.Product) (*models.Product, error)
 	FindOne(context.Context, string) (*models.Product, error)
 	FindAll(context.Context) ([]*models.Product, error)
+	DecreaseStock(context.Context, string, int64) (*models.Product, error)
 }
 type GrpcProductHandler struct {
 	pbproduct.UnimplementedProductServiceServer
@@ -79,4 +80,16 @@ func (h *GrpcProductHandler) FindAll(ctx context.Context, req *pbproduct.FindAll
 	return &pbproduct.FindAllResponse{
 		Products: pbProducts,
 	}, nil
+}
+
+func (h *GrpcProductHandler) DecreaseStock(ctx context.Context, req *pbproduct.DecreaseStockRequest) (*pbproduct.DecreaseStockResponse, error) {
+	_, err := h.service.DecreaseStock(ctx, req.Id, req.Quantity)
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	return &pbproduct.DecreaseStockResponse{
+		Status: http.StatusOK,
+	}, nil
+
 }

@@ -77,7 +77,7 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("token", res.Token, 3600*24*30, "", "", false, true)
+	ctx.SetCookie("Authorization", res.Token, 3600*24*30, "", "", false, true)
 
 	ctx.JSON(int(res.Status), res)
 }
@@ -136,6 +136,8 @@ func (h *Handler) AdminLogin(ctx *gin.Context) {
 		})
 		return
 	}
+
+	ctx.SetCookie("Authorization", res.Token, 3600*24*30, "", "", false, true)
 
 	ctx.JSON(int(res.Status), res)
 }

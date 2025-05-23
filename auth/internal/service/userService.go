@@ -6,6 +6,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"log"
 )
 
 type UserRepository interface {
@@ -53,11 +54,13 @@ func (u *UserService) Register(ctx context.Context, user *models.User) (*models.
 	user.Password = hashedPassword
 
 	user.ID = uuid.New().String()
+	log.Printf("Generated UUID for user with email = %s: %s\nAAA\nAAA", user.Email, user.ID)
 
 	resp, err := u.repository.CreateUser(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("register user error: %w", err)
 	}
+	log.Printf("REAL UUID for user with email = %s: %s\nAAA\nAAA", resp.Email, resp.ID)
 	return resp, nil
 }
 
@@ -70,7 +73,8 @@ func (u *UserService) Login(ctx context.Context, user *models.User) (*dto.LoginR
 	if !u.passwordHasher.CheckPasswordHash(user.Password, dbUser.Password) {
 		return nil, fmt.Errorf("invalid password")
 	}
-
+	user.ID = dbUser.ID
+	log.Printf("user.ID in service.Login = %s", user.ID)
 	token, err := u.tokenGenerator.GenerateToken(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
@@ -111,6 +115,8 @@ func (u *UserService) AdminLogin(ctx context.Context, admin *models.Admin) (*dto
 	if !u.passwordHasher.CheckPasswordHash(admin.Password, dbAdmin.Password) {
 		return nil, fmt.Errorf("invalid password")
 	}
+
+	admin.ID = dbAdmin.ID
 
 	token, err := u.tokenGenerator.GenerateAdminToken(admin)
 	if err != nil {

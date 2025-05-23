@@ -4,6 +4,7 @@ import (
 	"auth/internal/models"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"log"
 	"os"
 	"time"
 )
@@ -18,11 +19,11 @@ func NewTokenGenerator() *JWTGenerator {
 func (tkGen *JWTGenerator) GenerateToken(user *models.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
+	log.Printf("GenerateToken: user.ID = %s", user.ID)
+
 	claims := models.JWTClaims{
-		ID:       user.ID,
-		Username: user.Username,
-		Password: user.Password,
-		Email:    user.Email,
+		ID:    user.ID,
+		Email: user.Email,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Issuer:    "marketplace-auth",
@@ -32,6 +33,7 @@ func (tkGen *JWTGenerator) GenerateToken(user *models.User) (string, error) {
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	secretSigningKey := os.Getenv("SECRET_KEY")
+	log.Println("GenerateToken SECRET_KEY:", secretSigningKey)
 	if secretSigningKey == "" {
 		return "", fmt.Errorf("SECRET_KEY environment variable not set")
 	}
@@ -50,7 +52,6 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 	claims := models.JWTClaims{
 		ID:       admin.ID,
 		Username: admin.Username,
-		Password: admin.Password,
 		RegisteredClaims: jwt.RegisteredClaims{
 			ExpiresAt: jwt.NewNumericDate(expirationTime),
 			Issuer:    "marketplace-auth",
@@ -60,6 +61,7 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
 	secretSigningKey := os.Getenv("SECRET_KEY")
+	log.Println("GenerateAdminToken SECRET_KEY:", secretSigningKey)
 	if secretSigningKey == "" {
 		return "", fmt.Errorf("SECRET_KEY environment variable not set")
 	}
@@ -74,18 +76,23 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 
 func (tkGen *JWTGenerator) ValidateToken(tokenString string) (*models.JWTClaims, error) {
 	secretSigningKey := os.Getenv("SECRET_KEY")
+	log.Println("ValidateToken SECRET_KEY:", secretSigningKey)
 
 	token, err := jwt.ParseWithClaims(tokenString, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretSigningKey), nil
 	})
 	if err != nil {
+		log.Println("ParseWithClaims error:", err)
 		return nil, err
 	}
 
 	claims, ok := token.Claims.(*models.JWTClaims)
+	log.Println("claims1:", claims)
 	if !ok {
 		return nil, fmt.Errorf("invalid token claims")
 	}
+
+	log.Println("claims2:", claims)
 
 	if claims.ExpiresAt.Time.Before(time.Now()) {
 

@@ -12,6 +12,7 @@ type ProductRepository interface {
 	CreateProduct(context.Context, *models.Product) (*models.Product, error)
 	FindOneProductByID(context.Context, string) (*models.Product, error)
 	FindAllProducts(context.Context) ([]*models.Product, error)
+	DecreaseStock(context.Context, string, int64) (*models.Product, error)
 }
 
 type ProductService struct {
@@ -34,8 +35,8 @@ func (s *ProductService) CreateProduct(ctx context.Context, product *models.Prod
 	return s.repository.CreateProduct(ctx, product)
 }
 
-func (s *ProductService) FindOne(ctx context.Context, ID string) (*models.Product, error) {
-	resp, err := s.repository.FindOneProductByID(ctx, ID)
+func (s *ProductService) FindOne(ctx context.Context, id string) (*models.Product, error) {
+	resp, err := s.repository.FindOneProductByID(ctx, id)
 	if err != nil {
 		return nil, fmt.Errorf("find product by id: %w", err)
 	}
@@ -46,6 +47,18 @@ func (s *ProductService) FindAll(ctx context.Context) ([]*models.Product, error)
 	resp, err := s.repository.FindAllProducts(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("find all products: %w", err)
+	}
+	return resp, nil
+}
+
+func (s *ProductService) DecreaseStock(ctx context.Context, productID string, quantity int64) (*models.Product, error) {
+	orderStat, err := s.repository.FindOneProductByID(ctx, productID)
+	if err != nil {
+		return nil, fmt.Errorf("find product by id: %w", err)
+	}
+	resp, err := s.repository.DecreaseStock(ctx, productID, orderStat.Stock-quantity)
+	if err != nil {
+		return nil, fmt.Errorf("decrease stock: %w", err)
 	}
 	return resp, nil
 }
