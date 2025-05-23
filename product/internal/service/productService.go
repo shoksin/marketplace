@@ -5,7 +5,6 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"log"
 	"product/internal/models"
 )
 
@@ -14,6 +13,7 @@ type ProductRepository interface {
 	FindOneProductByID(context.Context, string) (*models.Product, error)
 	FindAllProducts(context.Context) ([]*models.Product, error)
 	DecreaseStock(context.Context, string, int64) (*models.Product, error)
+	FindProductByName(context.Context, string) (*models.Product, error)
 }
 
 type ProductService struct {
@@ -29,6 +29,14 @@ func NewProductService(repository ProductRepository) *ProductService {
 func (s *ProductService) CreateProduct(ctx context.Context, product *models.Product) (*models.Product, error) {
 	if product.Price < 0 || product.Stock < 1 || product.Name == "" {
 		return nil, errors.New("invalid product data")
+	}
+
+	productResp, err := s.repository.FindProductByName(ctx, product.Name)
+	if err != nil {
+		return nil, fmt.Errorf("find product by name: %w", err)
+	}
+	if productResp != nil {
+		return nil, fmt.Errorf("product with name %s already exists", product.Name)
 	}
 
 	product.ID = uuid.New().String()
@@ -53,7 +61,6 @@ func (s *ProductService) FindAll(ctx context.Context) ([]*models.Product, error)
 }
 
 func (s *ProductService) DecreaseStock(ctx context.Context, productID string, quantity int64) (*models.Product, error) {
-	log.Printf("DecreaseStock productID: %v, quantity: %v", productID, quantity)
 	orderStat, err := s.repository.FindOneProductByID(ctx, productID)
 	if err != nil {
 		return nil, fmt.Errorf("find product by id: %w", err)

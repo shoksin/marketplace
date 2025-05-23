@@ -30,7 +30,6 @@ func NewGrpcOrderHandler(service OrderService, productClient *client.ProductServ
 
 func (h *GrpcOrderHandler) CreateOrder(ctx context.Context, req *pborder.CreateOrderRequest) (*pborder.CreateOrderResponse, error) {
 	product, err := (h.productClient).FindOne(ctx, req.ProductID)
-	log.Printf("product.ID = %v", product.Data.Id)
 	if err != nil {
 		log.Printf("FindOne error: %v\n", err)
 		return &pborder.CreateOrderResponse{
@@ -38,11 +37,11 @@ func (h *GrpcOrderHandler) CreateOrder(ctx context.Context, req *pborder.CreateO
 		}, status.Error(codes.Internal, err.Error())
 	}
 
-	if product.Data.Stock < 1 {
-		log.Printf("Product stock is less than 1\n")
+	if product.Data.Stock < req.Quantity {
+		log.Printf("Product stock is less than you want to buy\n")
 		return &pborder.CreateOrderResponse{
 			Status: http.StatusBadRequest,
-		}, status.Error(codes.FailedPrecondition, "The stock must be greater than zero")
+		}, status.Error(codes.FailedPrecondition, "The stock must be less or equal to you want to buy")
 	}
 
 	order := &models.Order{
@@ -62,8 +61,6 @@ func (h *GrpcOrderHandler) CreateOrder(ctx context.Context, req *pborder.CreateO
 			Status: http.StatusBadRequest,
 		}, status.Error(codes.Internal, err.Error())
 	}
-
-	log.Printf("Order created ID: %v\n", createOrderResp.ID)
 
 	return &pborder.CreateOrderResponse{
 		Id: createOrderResp.ID,

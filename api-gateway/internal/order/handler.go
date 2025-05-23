@@ -47,9 +47,6 @@ func (h *Handler) CreateOrder(ctx *gin.Context) {
 		return
 	}
 
-	log.Println("userID:", userID)
-	log.Printf("Product ID: %s\n\n\n\n\n", req.ProductID)
-
 	res, err := h.client.client.CreateOrder(ctx, &pborder.CreateOrderRequest{
 		ProductID: req.ProductID,
 		Quantity:  req.Quantity,

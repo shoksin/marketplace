@@ -84,8 +84,9 @@ func (h *Handler) FindProduct(ctx *gin.Context) {
 	}
 
 	if product == nil {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"error": "nil response from product service",
+		log.Printf("nil response from FindOne")
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": []any{},
 		})
 		return
 	}
@@ -97,11 +98,18 @@ func (h *Handler) FindProduct(ctx *gin.Context) {
 
 func (h *Handler) FindAllProducts(ctx *gin.Context) {
 	products, err := h.client.client.FindAll(context.Background(), &pbproduct.FindAllRequest{})
-	if err != nil || products == nil {
+	if err != nil {
 		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})
+	}
+
+	if products == nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": "{}",
+		})
+		return
 	}
 
 	ctx.JSON(int(products.Status), products)

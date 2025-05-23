@@ -28,8 +28,6 @@ func (m *Middleware) ValidateToken(ctx *gin.Context) {
 		return
 	}
 
-	log.Printf("Authorization: %s", authorization)
-
 	token := strings.TrimSpace(authorization)
 
 	if token == "" {
@@ -38,8 +36,6 @@ func (m *Middleware) ValidateToken(ctx *gin.Context) {
 		})
 		return
 	}
-
-	log.Printf("Token: %s", token)
 
 	res, err := m.client.Client.Validate(context.Background(), &pbauth.ValidateRequest{
 		Token: token,
@@ -52,7 +48,6 @@ func (m *Middleware) ValidateToken(ctx *gin.Context) {
 		return
 	}
 
-	log.Printf("Middleware ValidateToken user_id = %v", res.UserID)
 	ctx.Set("user_id", res.UserID)
 	ctx.Next()
 }

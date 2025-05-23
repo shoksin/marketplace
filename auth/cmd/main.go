@@ -13,7 +13,6 @@ import (
 )
 
 func init() {
-	//initializer.LoadEnv()
 	initializer.InitDB()
 }
 

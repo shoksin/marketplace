@@ -28,15 +28,6 @@ func NewProductServiceClient(target string) *ProductServiceClient {
 	return &ProductServiceClient{
 		Client: pbproduct.NewProductServiceClient(conn),
 	}
-
-	/*productAddr := os.Getenv("PRODUCT_SERVICE")
-	conn, err := grpc.NewClient(productAddr, grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-	return &ProductServiceClient{
-		Client: pbproduct.NewProductServiceClient(conn),
-	}*/
 }
 
 func (c *ProductServiceClient) FindOne(ctx context.Context, productID string) (*pbproduct.FindOneResponse, error) {

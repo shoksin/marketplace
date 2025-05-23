@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"log"
 	"order/internal/models"
 )
 
@@ -24,7 +23,6 @@ func NewOrderService(repository OrderRepository) *OrderService {
 func (s *OrderService) CreateOrder(ctx context.Context, order *models.Order) (*models.Order, error) {
 	order.ID = uuid.New().String()
 	resp, err := s.repository.CreateOrder(ctx, order)
-	log.Printf("CreateOrder resp:%+v, err:%+v", resp, err)
 	if err != nil {
 		return nil, fmt.Errorf("CreateOrder error: %w", err)
 	}

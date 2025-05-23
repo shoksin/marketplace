@@ -13,7 +13,6 @@ import (
 
 func init() {
 	initializer.InitDB()
-	//initializer.LoadConfig()
 }
 
 func main() {

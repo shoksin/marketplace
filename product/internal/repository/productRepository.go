@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
-	"log"
 	"product/internal/models"
 )
 
@@ -29,26 +28,37 @@ func (r *ProductRepository) CreateProduct(ctx context.Context, product *models.P
 
 func (r *ProductRepository) FindOneProductByID(ctx context.Context, ID string) (*models.Product, error) {
 	var product models.Product
-	log.Printf("1 FindOneProductByID ID = %s\n", ID)
-	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products WHERE product_id = $1;`
+	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products WHERE product_id = $1 AND stock > 0;`
 	if err := r.DB.GetContext(ctx, &product, query, ID); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("product not found")
 		}
 		return nil, err
 	}
-	log.Printf("2 FindOneProductByID ID = %s\n", ID)
+
+	return &product, nil
+}
+
+func (r *ProductRepository) FindProductByName(ctx context.Context, name string) (*models.Product, error) {
+	var product models.Product
+	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products WHERE name = $1;`
+	if err := r.DB.GetContext(ctx, &product, query, name); err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, nil
+		}
+		return nil, err
+	}
 
 	return &product, nil
 }
 
 func (r *ProductRepository) FindAllProducts(ctx context.Context) ([]*models.Product, error) {
 	var products []*models.Product
-	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products`
+	query := `SELECT product_id, name, price, stock, created_at, updated_at, deleted_at FROM products WHERE stock > 0;`
 	rows, err := r.DB.QueryContext(ctx, query)
 	defer rows.Close()
 
-	for rows.Next() {
+	for rows != nil && rows.Next() {
 		var product models.Product
 		if err = rows.Scan(&product.ID, &product.Name, &product.Price, &product.Stock, &product.CreatedAt, &product.UpdatedAt, &product.DeletedAt); err != nil {
 			return nil, err

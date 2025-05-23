@@ -6,7 +6,6 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"log"
 )
 
 type UserRepository interface {
@@ -54,13 +53,11 @@ func (u *UserService) Register(ctx context.Context, user *models.User) (*models.
 	user.Password = hashedPassword
 
 	user.ID = uuid.New().String()
-	log.Printf("Generated UUID for user with email = %s: %s\nAAA\nAAA", user.Email, user.ID)
 
 	resp, err := u.repository.CreateUser(ctx, user)
 	if err != nil {
 		return nil, fmt.Errorf("register user error: %w", err)
 	}
-	log.Printf("REAL UUID for user with email = %s: %s\nAAA\nAAA", resp.Email, resp.ID)
 	return resp, nil
 }
 
@@ -74,7 +71,6 @@ func (u *UserService) Login(ctx context.Context, user *models.User) (*dto.LoginR
 		return nil, fmt.Errorf("invalid password")
 	}
 	user.ID = dbUser.ID
-	log.Printf("user.ID in service.Login = %s", user.ID)
 	token, err := u.tokenGenerator.GenerateToken(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
