@@ -16,7 +16,7 @@ func NewTokenGenerator() *JWTGenerator {
 	return &JWTGenerator{}
 }
 
-func (tkGen *JWTGenerator) GenerateToken(user *models.User) (string, error) {
+func (tkGen *JWTGenerator) GenerateUserToken(user *models.User) (string, error) {
 	expirationTime := time.Now().Add(24 * time.Hour)
 
 	claims := models.JWTClaims{
@@ -30,9 +30,9 @@ func (tkGen *JWTGenerator) GenerateToken(user *models.User) (string, error) {
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	secretSigningKey := os.Getenv("SECRET_KEY")
+	secretSigningKey := os.Getenv("USER_SECRET_KEY")
 	if secretSigningKey == "" {
-		return "", fmt.Errorf("SECRET_KEY environment variable not set")
+		return "", fmt.Errorf("USER_SECRET_KEY environment variable not set")
 	}
 
 	signedToken, err := token.SignedString([]byte(secretSigningKey))
@@ -57,9 +57,9 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 
-	secretSigningKey := os.Getenv("SECRET_KEY")
+	secretSigningKey := os.Getenv("ADMIN_SECRET_KEY")
 	if secretSigningKey == "" {
-		return "", fmt.Errorf("SECRET_KEY environment variable not set")
+		return "", fmt.Errorf("ADMIN_SECRET_KEY environment variable not set")
 	}
 
 	signedToken, err := token.SignedString([]byte(secretSigningKey))
@@ -70,8 +70,17 @@ func (tkGen *JWTGenerator) GenerateAdminToken(admin *models.Admin) (string, erro
 	return signedToken, nil
 }
 
-func (tkGen *JWTGenerator) ValidateToken(tokenString string) (*models.JWTClaims, error) {
-	secretSigningKey := os.Getenv("SECRET_KEY")
+func (tkGen *JWTGenerator) ValidateToken(tokenString string, isAdmin bool) (*models.JWTClaims, error) {
+	var secretSigningKey string
+	if !isAdmin {
+		secretSigningKey = os.Getenv("USER_SECRET_KEY")
+	} else {
+		secretSigningKey = os.Getenv("ADMIN_SECRET_KEY")
+	}
+
+	if secretSigningKey == "" {
+		return nil, fmt.Errorf("USER_SECRET_KEY or ADMIN_SECRET_KEY environment variable not set")
+	}
 
 	token, err := jwt.ParseWithClaims(tokenString, &models.JWTClaims{}, func(token *jwt.Token) (interface{}, error) {
 		return []byte(secretSigningKey), nil

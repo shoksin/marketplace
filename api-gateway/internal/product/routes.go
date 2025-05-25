@@ -7,7 +7,7 @@ import (
 
 func SetupRoutes(r *gin.Engine, handler *Handler, authService *auth.Middleware) {
 	product := r.Group("/product")
-	product.Use(authService.ValidateToken)
+	product.Use(authService.ValidateAdminToken())
 	product.POST("/", handler.CreateProduct)
 	product.GET("/:id", handler.FindProduct)
 	product.GET("/", handler.FindAllProducts)

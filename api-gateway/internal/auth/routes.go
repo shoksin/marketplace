@@ -1,8 +1,10 @@
 package auth
 
-import "github.com/gin-gonic/gin"
+import (
+	"github.com/gin-gonic/gin"
+)
 
-func SetupRoutes(r *gin.Engine, handler *Handler) {
+func SetupRoutes(r *gin.Engine, handler *Handler, middleware *Middleware) {
 	auth := r.Group("/auth")
 	auth.POST("/register", handler.Register)
 	auth.POST("/login", handler.Login)

@@ -38,7 +38,21 @@ func (r *UserRepository) CreateAdmin(ctx context.Context, admin *models.Admin) (
 
 func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
 	var user models.User
-	err := r.DB.GetContext(ctx, &user, `SELECT user_id, username, password, email, birthday, created_at, updated_at, deleted_at FROM users WHERE email = $1`, email)
+	query := `SELECT user_id, username, password, email, birthday, created_at, updated_at, deleted_at FROM users WHERE email = $1`
+	err := r.DB.GetContext(ctx, &user, query, email)
+	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return nil, errors.New("user not found")
+		}
+		return nil, err
+	}
+	return &user, nil
+}
+
+func (r *UserRepository) GetUserByUsername(ctx context.Context, username string) (*models.User, error) {
+	var user models.User
+	query := `SELECT user_id, username, password, email, birthday, created_at, updated_at, deleted_at FROM users WHERE username = $1`
+	err := r.DB.GetContext(ctx, &user, query, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
 			return nil, errors.New("user not found")
@@ -50,6 +64,7 @@ func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*mod
 
 func (r *UserRepository) GetAdminByUsername(ctx context.Context, username string) (*models.Admin, error) {
 	var admin models.Admin
+
 	err := r.DB.GetContext(ctx, &admin, `SELECT admin_id, username, password, created_at, updated_at, deleted_at FROM admins WHERE username = $1`, username)
 	if err != nil {
 		if errors.Is(err, sql.ErrNoRows) {

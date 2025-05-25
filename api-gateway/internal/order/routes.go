@@ -7,7 +7,7 @@ import (
 
 func SetupRoutes(r *gin.Engine, handler *Handler, authService *auth.Middleware) {
 	order := r.Group("/order")
-	order.Use(authService.ValidateToken)
+	order.Use(authService.ValidateUserToken())
 
 	order.POST("/", handler.CreateOrder)
 }

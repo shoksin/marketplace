@@ -12,13 +12,14 @@ type UserRepository interface {
 	CreateUser(ctx context.Context, user *models.User) (*models.User, error)
 	CreateAdmin(ctx context.Context, admin *models.Admin) (*models.Admin, error)
 	GetUserByEmail(ctx context.Context, email string) (*models.User, error)
+	GetUserByUsername(ctx context.Context, username string) (*models.User, error)
 	GetAdminByUsername(ctx context.Context, username string) (*models.Admin, error)
 }
 
 type TokenGenerator interface {
-	GenerateToken(user *models.User) (string, error)
+	GenerateUserToken(user *models.User) (string, error)
 	GenerateAdminToken(admin *models.Admin) (string, error)
-	ValidateToken(tokenString string) (*models.JWTClaims, error)
+	ValidateToken(tokenString string, isAdmin bool) (*models.JWTClaims, error)
 }
 
 type PasswordHasher interface {
@@ -46,6 +47,11 @@ func (u *UserService) Register(ctx context.Context, user *models.User) (*models.
 		return nil, fmt.Errorf("user with email %s already exists", user.Email)
 	}
 
+	userExists, err = u.repository.GetUserByUsername(ctx, user.Username)
+	if userExists != nil && userExists.Username != "" {
+		return nil, fmt.Errorf("user with username %s already exists", user.Username)
+	}
+
 	hashedPassword, err := u.passwordHasher.HashPassword(user.Password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to hash password: %w", err)
@@ -71,7 +77,7 @@ func (u *UserService) Login(ctx context.Context, user *models.User) (*dto.LoginR
 		return nil, fmt.Errorf("invalid password")
 	}
 	user.ID = dbUser.ID
-	token, err := u.tokenGenerator.GenerateToken(user)
+	token, err := u.tokenGenerator.GenerateUserToken(user)
 	if err != nil {
 		return nil, fmt.Errorf("failed to generate token: %w", err)
 	}
@@ -105,7 +111,7 @@ func (u *UserService) AdminRegister(ctx context.Context, admin *models.Admin) (*
 func (u *UserService) AdminLogin(ctx context.Context, admin *models.Admin) (*dto.LoginResponse, error) {
 	dbAdmin, err := u.repository.GetAdminByUsername(ctx, admin.Username)
 	if err != nil {
-		return nil, fmt.Errorf("admin not found: %w", err)
+		return nil, fmt.Errorf("GetAdminByUsername error: %w", err)
 	}
 
 	if !u.passwordHasher.CheckPasswordHash(admin.Password, dbAdmin.Password) {
