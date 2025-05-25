@@ -7,45 +7,47 @@ services:
       - "8000:8000"
     depends_on:
       - auth-service
-    environment:
-      PORT: 8000
-      AUTH_SERVICE: auth-service:50051
-      PRODUCT_SERVICE: product-service:50052
-      ORDER_SERVICE: order-service:50053
+    env_file:
+      - ./api-gateway/.env
 
   auth-service:
     build: ./auth
     ports:
       - "50051:50051"
-    environment:
-      PORT: 50051
-      DATABASE_CONFIG: postgres://postgres:postgres@auth-db:5432/auth-service
-      SECRET_KEY: 2675e04aad046fa9fae8a7dd51c9a99e8c2c67a10386766f260c8bdbf82388e7d19625cc66bc66867723c62a59d43d56e728a3c47968e614bab6c06aa1b160d3024a977073fde5c567eff402af84bb98ec0ef7346868b681f71e71a70d8cffeed1bd63c744d6d4d623995b44c3eca8805ce9503e4164330ba514f79b9d606cad81783c77458fe799ca468662e69c3bc0580ce97445ea6d19d24187f14cd71eaf96c72c62714543d73ffdd24e80ab3880f07dec70b91e3f4dff4262f638eb6dd9adccc1e5ebda929f00aae28a9b160ec392833ae22ceaf6ae301ba944c887cde277b0eeb5f049489adc0d303c2fa4568b9c5bbf3310e944453cf16759ea7da42b
+    env_file:
+      - ./auth/.env
     depends_on:
       auth-db:
         condition: service_healthy
-    restart: always
 
-  #order-service:
-  #  ports:
-  #/\   - "50052:50052"
-   # depends_on:
-   #   - order-db
-  #product-service:
-  # build:  ./product
-  #  ports:
-  #    - "50053:50053"
-  #  depends_on:
-  #    - product-db
+  product-service:
+    build: ./product
+    ports:
+      - "50052:50052"
+    env_file:
+      - ./product/.env
+    depends_on:
+      product-db:
+        condition: service_healthy
+
+  order-service:
+    build: ./order
+    ports:
+     - "50053:50053"
+    env_file:
+      - ./order/.env
+    depends_on:
+      order-db:
+        condition: service_healthy
 
   auth-db:
     image: postgres:latest
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: auth-service
     ports:
       - "5433:5432"
+    env_file:
+      - ./auth/.env
+    volumes:
+      - auth-db-data:/var/lib/postgresql/data
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
@@ -53,16 +55,40 @@ services:
       timeout: 3s
       retries: 5
 
-  #order-db:
-  #  image: postgres:latest
-  #  ports:
-  #    - "5434:5432"
-  #product-db:
-  #  image: postgres:latest
-  #  ports:
-  #    - "5435:5432"
-  #  environment:
-  #    POSTGRES_USER: postgres
-  #    POSTGRES_PASSWORD: postgres
-  #    POSTGRES_DB: order-service
-  #  restart: always
+  product-db:
+    image: postgres:latest
+    ports:
+      - "5434:5432"
+    env_file:
+      - ./product/.env
+    volumes:
+      - product-db-data:/var/lib/postgresql/data
+    restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  order-db:
+    image: postgres:latest
+    ports:
+      - "5435:5432"
+    env_file:
+      - ./order/.env
+    volumes:
+      - order-db-data:/var/lib/postgresql/data
+    restart: always
+    depends_on:
+      product-db:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+volumes:
+  auth-db-data:
+  product-db-data:
+  order-db-data:

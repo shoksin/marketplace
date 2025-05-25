@@ -19,9 +19,9 @@ type UserService interface {
 }
 
 type TokenGenerator interface {
-	GenerateToken(user *models.User) (string, error)
+	GenerateUserToken(user *models.User) (string, error)
 	GenerateAdminToken(admin *models.Admin) (string, error)
-	ValidateToken(tokenString string) (*models.JWTClaims, error)
+	ValidateToken(tokenString string, isAdmin bool) (*models.JWTClaims, error)
 }
 
 type GrpcAuthHandler struct {
@@ -106,14 +106,14 @@ func (h *GrpcAuthHandler) AdminLogin(ctx context.Context, req *pbauth.AdminLogin
 	}, nil
 }
 func (h *GrpcAuthHandler) Validate(ctx context.Context, req *pbauth.ValidateRequest) (*pbauth.ValidateResponse, error) {
-	claims, err := h.jwtGenerator.ValidateToken(req.Token)
-	if err != nil {
+	claims, err := h.jwtGenerator.ValidateToken(req.Token, req.IsAdmin)
+	if err != nil || claims == nil {
 		log.Println("Validate error:", err)
 		return nil, status.Error(codes.Internal, err.Error())
 	}
 
 	return &pbauth.ValidateResponse{
-		UserID: claims.ID,
+		ID:     claims.ID,
 		Status: http.StatusOK,
 	}, nil
 }

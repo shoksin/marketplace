@@ -19,8 +19,8 @@ func NewHandler(client *Client) *Handler {
 
 func (h *Handler) CreateOrder(ctx *gin.Context) {
 	var req struct {
-		ProductID int64 `json:"product_id" binding:"required"`
-		Quantity  int64 `json:"quantity" binding:"required"`
+		ProductID string `json:"product_id" binding:"required"`
+		Quantity  int64  `json:"quantity" binding:"required"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -32,23 +32,25 @@ func (h *Handler) CreateOrder(ctx *gin.Context) {
 
 	val, exists := ctx.Get("user_id")
 	if !exists {
+		log.Printf("Request validation error: user_id = %v", val)
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"error": "unauthorized",
 		})
 		return
 	}
 
-	userId, ok := val.(int64)
+	userID, ok := val.(string)
 	if !ok {
 		ctx.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"error": "invalid user id format",
 		})
+		return
 	}
 
 	res, err := h.client.client.CreateOrder(ctx, &pborder.CreateOrderRequest{
 		ProductID: req.ProductID,
 		Quantity:  req.Quantity,
-		UserID:    userId,
+		UserID:    userID,
 	})
 
 	if err != nil || res == nil {

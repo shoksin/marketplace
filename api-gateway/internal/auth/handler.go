@@ -2,7 +2,6 @@ package auth
 
 import (
 	"context"
-	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/shoksin/marketplace-protos/proto/pbauth"
 	"log"
@@ -19,10 +18,10 @@ func NewHandler(client *Client) *Handler {
 
 func (h *Handler) Register(ctx *gin.Context) {
 	var req struct {
-		UserName string `json:"username" binding:"required"`
+		Username string `json:"username" binding:"required,min=1"`
 		Email    string `json:"email" binding:"required,email"`
-		Password string `json:"password" binding:"required"`
-		Birthday string `json:"birthday" binding:"required"`
+		Password string `json:"password" binding:"required,min=8"`
+		Birthday string `json:"birthday" binding:"required,len=10"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -34,7 +33,7 @@ func (h *Handler) Register(ctx *gin.Context) {
 	}
 
 	res, err := h.Client.Client.Register(context.Background(), &pbauth.RegisterRequest{
-		Username: req.UserName,
+		Username: req.Username,
 		Email:    req.Email,
 		Password: req.Password,
 		Birthday: req.Birthday,
@@ -54,11 +53,11 @@ func (h *Handler) Register(ctx *gin.Context) {
 func (h *Handler) Login(ctx *gin.Context) {
 	var req struct {
 		Email    string `json:"email" binding:"required"`
-		Password string `json:"password" binding:"required"`
+		Password string `json:"password" binding:"required,min=8"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
-		fmt.Printf("Validation error: %v", err)
+		log.Printf("Validation error: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
 			"error": err.Error(),
 		})
@@ -77,15 +76,15 @@ func (h *Handler) Login(ctx *gin.Context) {
 		return
 	}
 
-	ctx.SetCookie("token", res.Token, 3600*24*30, "", "", false, true)
+	ctx.SetCookie("Authorization", res.Token, 3600*24*30, "", "", false, true)
 
 	ctx.JSON(int(res.Status), res)
 }
 
 func (h *Handler) AdminRegister(ctx *gin.Context) {
 	var req struct {
-		UserName string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
+		Username string `json:"username" binding:"required,min=1"`
+		Password string `json:"password" binding:"required,min=8"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -97,7 +96,7 @@ func (h *Handler) AdminRegister(ctx *gin.Context) {
 	}
 
 	res, err := h.Client.Client.AdminRegister(context.Background(), &pbauth.AdminRegisterRequest{
-		Username: req.UserName,
+		Username: req.Username,
 		Password: req.Password,
 	})
 	if err != nil {
@@ -113,8 +112,8 @@ func (h *Handler) AdminRegister(ctx *gin.Context) {
 
 func (h *Handler) AdminLogin(ctx *gin.Context) {
 	var req struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
+		Username string `json:"username" binding:"required,min=1"`
+		Password string `json:"password" binding:"required,min=8"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -136,6 +135,8 @@ func (h *Handler) AdminLogin(ctx *gin.Context) {
 		})
 		return
 	}
+
+	ctx.SetCookie("Authorization", res.Token, 3600*24*30, "", "", false, true)
 
 	ctx.JSON(int(res.Status), res)
 }

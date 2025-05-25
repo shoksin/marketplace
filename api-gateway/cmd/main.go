@@ -57,10 +57,9 @@ func main() {
 	r := gin.Default()
 
 	authClient := auth.NewClient(authConn)
-	authHandler := auth.NewHandler(authClient)
-	auth.SetupRoutes(r, authHandler)
-
 	middleware := auth.NewMiddleware(authClient)
+	authHandler := auth.NewHandler(authClient)
+	auth.SetupRoutes(r, authHandler, middleware)
 
 	productClient := product.NewClient(productConn)
 	productHandler := product.NewHandler(productClient)

@@ -1,4 +1,7 @@
-.env
 .idea/
-TODO
-auth/HelpNotes
+HelpNotes
+auth/.env
+product/.env
+order/.env
+api-gateway/.env
+ToDoList.txt

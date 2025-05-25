@@ -4,10 +4,10 @@ go 1.23.6
 
 require (
 	github.com/golang-jwt/jwt/v5 v5.2.2
+	github.com/google/uuid v1.6.0
 	github.com/jackc/pgx/v5 v5.7.4
 	github.com/jmoiron/sqlx v1.4.0
-	github.com/joho/godotenv v1.5.1
-	github.com/shoksin/marketplace-protos v0.0.7
+	github.com/shoksin/marketplace-protos v0.0.13
 	golang.org/x/crypto v0.33.0
 	google.golang.org/grpc v1.72.0
 )

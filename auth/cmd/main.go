@@ -13,7 +13,6 @@ import (
 )
 
 func init() {
-	//initializer.LoadEnv()
 	initializer.InitDB()
 }
 
@@ -25,8 +24,7 @@ func main() {
 
 	grpcServer := grpc.NewServer()
 
-	db := initializer.DB
-	userRepo := repository.NewUserRepository(db)
+	userRepo := repository.NewUserRepository(initializer.DB)
 	tokenGenerator := utils.NewTokenGenerator()
 	passwordHasher := utils.NewPasswordHasher()
 	userService := service.NewUserService(userRepo, tokenGenerator, passwordHasher)

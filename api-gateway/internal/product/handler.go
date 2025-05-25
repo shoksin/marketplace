@@ -6,7 +6,6 @@ import (
 	"github.com/shoksin/marketplace-protos/proto/pbproduct"
 	"log"
 	"net/http"
-	"strconv"
 )
 
 type Handler struct {
@@ -21,9 +20,9 @@ func NewHandler(client *Client) *Handler {
 
 func (h *Handler) CreateProduct(ctx *gin.Context) {
 	var req struct {
-		Name  string `json:"name" binding:"required"`
-		Price int64  `json:"price" binding:"required"`
-		Stock int64  `json:"stock" binding:"required"`
+		Name  string  `json:"name" binding:"required"`
+		Price float64 `json:"price" binding:"required"`
+		Stock int64   `json:"stock" binding:"required"`
 	}
 
 	if err := ctx.ShouldBind(&req); err != nil {
@@ -64,11 +63,10 @@ func (h *Handler) CreateProduct(ctx *gin.Context) {
 }
 
 func (h *Handler) FindProduct(ctx *gin.Context) {
-	id, err := strconv.ParseInt(ctx.Param("id"), 10, 64)
-	if err != nil {
-		log.Printf("Get id from param error: %v", err)
+	id := ctx.Param("id")
+	if id == "" {
 		ctx.AbortWithStatusJSON(http.StatusBadRequest, gin.H{
-			"error": err.Error(),
+			"error": "cannot get product id",
 		})
 		return
 	}
@@ -86,8 +84,9 @@ func (h *Handler) FindProduct(ctx *gin.Context) {
 	}
 
 	if product == nil {
-		ctx.AbortWithStatusJSON(http.StatusNotFound, gin.H{
-			"error": "nil response from product service",
+		log.Printf("nil response from FindOne")
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": []any{},
 		})
 		return
 	}
@@ -99,11 +98,18 @@ func (h *Handler) FindProduct(ctx *gin.Context) {
 
 func (h *Handler) FindAllProducts(ctx *gin.Context) {
 	products, err := h.client.client.FindAll(context.Background(), &pbproduct.FindAllRequest{})
-	if err != nil || products == nil {
+	if err != nil {
 		log.Printf("Error when calling the gRPC service: %v", err)
 		ctx.AbortWithStatusJSON(http.StatusBadGateway, gin.H{
 			"error": err.Error(),
 		})
+	}
+
+	if products == nil {
+		ctx.JSON(http.StatusOK, gin.H{
+			"data": "{}",
+		})
+		return
 	}
 
 	ctx.JSON(int(products.Status), products)

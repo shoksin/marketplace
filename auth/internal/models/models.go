@@ -6,7 +6,7 @@ import (
 )
 
 type User struct {
-	ID        int64      `json:"id" db:"user_id"`
+	ID        string     `json:"id" db:"user_id"`
 	Username  string     `json:"username" db:"username"`
 	Password  string     `json:"password" db:"password"`
 	Email     string     `json:"email" db:"email"`
@@ -17,7 +17,7 @@ type User struct {
 }
 
 type Admin struct {
-	ID        int64      `json:"id" db:"admin_id"`
+	ID        string     `json:"id" db:"admin_id"`
 	Username  string     `json:"username" db:"username"`
 	Password  string     `json:"password" db:"password"`
 	CreatedAt *time.Time `json:"created_at" db:"created_at"`
@@ -26,9 +26,8 @@ type Admin struct {
 }
 
 type JWTClaims struct {
-	ID       int64  `json:"id"`
+	ID       string `json:"id"`
 	Username string `json:"username"`
-	Password string `json:"password"`
 	Email    string `json:"email"`
 	jwt.RegisteredClaims
 }
