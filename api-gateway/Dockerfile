@@ -13,13 +13,12 @@ COPY . .
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
 RUN go build -o out/dist ./cmd;
 
-FROM alpine:3.14
+FROM alpine:3.19
 
 WORKDIR /app
 
-# бинарник
+# бинарник + env
 COPY --from=builder /app/out/dist /app/dist
-# и файл с переменными
 COPY --from=builder /app/.env /app/.env
 
 RUN chmod +x /app/dist

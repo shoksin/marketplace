@@ -1,11 +1,19 @@
 # Scalable online marketplace powered by microservices
 
-## Beta release of a minimally viable marketplace prototype
+## Current development:
+Actively working on Dockerized microservice migrations.
+
+## Next steps:
+- Minimize Docker image size.
+- Implement comprehensive logging across all services for enhanced observability and troubleshooting.
+- Expand API surface by introducing new endpoints to support upcoming features.
+- Integrate metrics collection
+- Enable distributed tracing
 
 ### I'm actively developing and refining the project’s overall architecture to support future features and scalability.
-### Current focus: core functionality
 
-## At this stage, the platform is designed to be as simple as possible—just enough to demonstrate basic marketplace operations and ensure everything works end‑to‑end.
+## Long-term vision:
+### Transition to an event-driven architecture to achieve greater decoupling, scalability, and real-time responsiveness across microservices.
 
 ## Project architecture:
 ![Диграмма проекта](images/diagramMarketplace.png) 
