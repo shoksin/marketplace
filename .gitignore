@@ -1,5 +1,4 @@
 .idea/
-HelpNotes
 auth/.env
 product/.env
 order/.env
