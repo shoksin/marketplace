@@ -1,11 +1,9 @@
 # Scalable online marketplace powered by microservices
 
 ## Current development:
-Actively working on Dockerized microservice migrations.
+Implement comprehensive logging across all services for enhanced observability and troubleshooting.
 
 ## Next steps:
-- Minimize Docker image size.
-- Implement comprehensive logging across all services for enhanced observability and troubleshooting.
 - Expand API surface by introducing new endpoints to support upcoming features.
 - Integrate metrics collection
 - Enable distributed tracing

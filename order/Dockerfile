@@ -8,19 +8,23 @@ RUN go mod download
 COPY . .
 
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go install github.com/pressly/goose/v3/cmd/goose@v3.24.3
-RUN go build -o out/dist ./cmd;
+RUN go build -o build ./cmd;
+
 
 FROM alpine:3.19
 
+#add timezone for correct work of time.Now() and create appuser
+RUN apk --no-cache add ca-certificates tzdata && adduser -D -s /bin/sh appuser
+
 WORKDIR /app
 
-# бинарник + env + migrations
-COPY --from=builder /app/out/dist   /app/dist
-COPY --from=builder /app/migrations /app/migrations
+# app + env + migrations
+COPY --from=builder /app/build   /app/program
 COPY --from=builder /app/.env       /app/.env
-COPY --from=builder /go/bin/goose   /usr/local/bin/goose
+COPY --from=builder /app/migrations /app/migrations
 
-RUN chmod +x /usr/local/bin/goose /app/dist
+RUN chmod +x /app/program && chown -R appuser:appuser /app
 
-CMD ["sh", "-c", "goose -dir ./migrations postgres \"$DATABASE_CONFIG\" up && /app/dist" ]
+USER appuser
+
+CMD ["/app/program"]

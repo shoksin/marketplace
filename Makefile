@@ -1,5 +1,7 @@
 DIRS = api-gateway auth order product
 
+MIGRATION_DIR = ./migrations
+
 start:
 	docker-compose up
 start-rebuild:
