@@ -2,14 +2,14 @@ package main
 
 import (
 	"github.com/shoksin/marketplace-protos/proto/pborder"
+	"github.com/shoksin/marketplace/order/internal/client"
+	"github.com/shoksin/marketplace/order/internal/handler"
+	"github.com/shoksin/marketplace/order/internal/initializer"
+	"github.com/shoksin/marketplace/order/internal/repository"
+	"github.com/shoksin/marketplace/order/internal/service"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	"order/internal/client"
-	"order/internal/handler"
-	"order/internal/initializer"
-	"order/internal/repository"
-	"order/internal/service"
 	"os"
 )
 

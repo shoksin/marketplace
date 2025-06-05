@@ -1,4 +1,4 @@
-module product
+module github.com/shoksin/marketplace/product
 
 go 1.23.6
 

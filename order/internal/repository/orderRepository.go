@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/jmoiron/sqlx"
-	"order/internal/models"
+	"github.com/shoksin/marketplace/order/internal/models"
 )
 
 type OrderRepository struct {

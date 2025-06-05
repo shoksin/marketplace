@@ -1,12 +1,12 @@
 package main
 
 import (
-	"auth/internal/handler"
-	"auth/internal/initializer"
-	"auth/internal/repository"
-	"auth/internal/service"
-	"auth/internal/utils"
 	"github.com/shoksin/marketplace-protos/proto/pbauth"
+	"github.com/shoksin/marketplace/auth/internal/handler"
+	"github.com/shoksin/marketplace/auth/internal/initializer"
+	"github.com/shoksin/marketplace/auth/internal/repository"
+	"github.com/shoksin/marketplace/auth/internal/service"
+	"github.com/shoksin/marketplace/auth/internal/utils"
 	"google.golang.org/grpc"
 	"log"
 	"net"

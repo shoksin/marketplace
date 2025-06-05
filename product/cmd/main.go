@@ -2,13 +2,13 @@ package main
 
 import (
 	"github.com/shoksin/marketplace-protos/proto/pbproduct"
+	"github.com/shoksin/marketplace/product/internal/handler"
+	"github.com/shoksin/marketplace/product/internal/initializer"
+	"github.com/shoksin/marketplace/product/internal/repository"
+	"github.com/shoksin/marketplace/product/internal/service"
 	"google.golang.org/grpc"
 	"log"
 	"net"
-	"product/internal/handler"
-	"product/internal/initializer"
-	"product/internal/repository"
-	"product/internal/service"
 )
 
 func init() {

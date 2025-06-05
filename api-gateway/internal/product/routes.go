@@ -1,8 +1,8 @@
 package product
 
 import (
-	"api-gateway/internal/auth"
 	"github.com/gin-gonic/gin"
+	"github.com/shoksin/marketplace/api-gateway/internal/auth"
 )
 
 func SetupRoutes(r *gin.Engine, handler *Handler, authService *auth.Middleware) {

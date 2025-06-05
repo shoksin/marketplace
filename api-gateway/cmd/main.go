@@ -1,10 +1,10 @@
 package main
 
 import (
-	"api-gateway/internal/auth"
-	"api-gateway/internal/order"
-	"api-gateway/internal/product"
 	"github.com/gin-gonic/gin"
+	"github.com/shoksin/marketplace/api-gateway/internal/auth"
+	"github.com/shoksin/marketplace/api-gateway/internal/order"
+	"github.com/shoksin/marketplace/api-gateway/internal/product"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
 	"log"

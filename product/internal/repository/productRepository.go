@@ -5,7 +5,7 @@ import (
 	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
-	"product/internal/models"
+	"github.com/shoksin/marketplace/product/internal/models"
 )
 
 type ProductRepository struct {

@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/google/uuid"
-	"product/internal/models"
+	"github.com/shoksin/marketplace/product/internal/models"
 )
 
 type ProductRepository interface {

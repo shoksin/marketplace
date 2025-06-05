@@ -3,12 +3,12 @@ package handler
 import (
 	"context"
 	"github.com/shoksin/marketplace-protos/proto/pborder"
+	"github.com/shoksin/marketplace/order/internal/client"
+	"github.com/shoksin/marketplace/order/internal/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"
 	"net/http"
-	"order/internal/client"
-	"order/internal/models"
 )
 
 type OrderService interface {

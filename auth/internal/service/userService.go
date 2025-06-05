@@ -1,11 +1,11 @@
 package service
 
 import (
-	"auth/internal/dto"
-	"auth/internal/models"
 	"context"
 	"fmt"
 	"github.com/google/uuid"
+	"github.com/shoksin/marketplace/auth/internal/dto"
+	"github.com/shoksin/marketplace/auth/internal/models"
 )
 
 type UserRepository interface {

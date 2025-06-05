@@ -1,4 +1,4 @@
-module api-gateway
+module github.com/shoksin/marketplace/api-gateway
 
 go 1.23.6
 

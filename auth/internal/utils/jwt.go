@@ -1,9 +1,9 @@
 package utils
 
 import (
-	"auth/internal/models"
 	"fmt"
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/shoksin/marketplace/auth/internal/models"
 	"log"
 	"os"
 	"time"

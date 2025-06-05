@@ -1,10 +1,10 @@
 package handler
 
 import (
-	"auth/internal/dto"
-	"auth/internal/models"
 	"context"
 	"github.com/shoksin/marketplace-protos/proto/pbauth"
+	"github.com/shoksin/marketplace/auth/internal/dto"
+	"github.com/shoksin/marketplace/auth/internal/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"log"

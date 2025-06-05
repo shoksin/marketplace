@@ -1,11 +1,11 @@
 package repository
 
 import (
-	"auth/internal/models"
 	"context"
 	"database/sql"
 	"errors"
 	"github.com/jmoiron/sqlx"
+	"github.com/shoksin/marketplace/auth/internal/models"
 )
 
 type UserRepository struct {

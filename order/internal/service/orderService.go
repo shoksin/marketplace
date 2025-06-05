@@ -4,7 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/google/uuid"
-	"order/internal/models"
+	"github.com/shoksin/marketplace/order/internal/models"
 )
 
 type OrderRepository interface {

@@ -3,10 +3,10 @@ package handler
 import (
 	"context"
 	"github.com/shoksin/marketplace-protos/proto/pbproduct"
+	"github.com/shoksin/marketplace/product/internal/models"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"net/http"
-	"product/internal/models"
 )
 
 type ProductService interface {
@@ -69,7 +69,7 @@ func (h *GrpcProductHandler) FindAll(ctx context.Context, req *pbproduct.FindAll
 	if err != nil {
 		return nil, status.Error(codes.Internal, err.Error())
 	}
-	
+
 	if products == nil {
 		return nil, nil
 	}
