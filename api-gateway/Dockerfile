@@ -11,17 +11,21 @@ RUN go env -w GOPROXY=https://goproxy.io,direct && go mod download
 COPY . .
 
 ENV CGO_ENABLED=0 GOOS=linux GOARCH=amd64
-RUN go build -o out/dist ./cmd;
+RUN go build -o build ./cmd;
 
-FROM alpine:3.14
+FROM alpine:3.19
+
+#add timezone for correct work of time.Now() and create appuser
+RUN apk --no-cache add ca-certificates tzdata && adduser -D -s /bin/sh appuser
 
 WORKDIR /app
 
-# бинарник
-COPY --from=builder /app/out/dist /app/dist
-# и файл с переменными
+# бинарник + env
+COPY --from=builder /app/build /app/program
 COPY --from=builder /app/.env /app/.env
 
-RUN chmod +x /app/dist
+RUN chmod +x /app/program && chown -R appuser:appuser /app
 
-CMD ["/app/dist"]
+USER appuser
+
+CMD ["/app/program"]
