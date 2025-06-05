@@ -7,6 +7,7 @@ Implement comprehensive logging across all services for enhanced observability a
 - Expand API surface by introducing new endpoints to support upcoming features.
 - Integrate metrics collection
 - Enable distributed tracing
+- Add caching
 
 ### I'm actively developing and refining the project’s overall architecture to support future features and scalability.
 
@@ -14,10 +15,10 @@ Implement comprehensive logging across all services for enhanced observability a
 ### Transition to an event-driven architecture to achieve greater decoupling, scalability, and real-time responsiveness across microservices.
 
 ## Project architecture:
-![Диграмма проекта](images/diagramMarketplace.png) 
+![Project diagram](images/diagramMarketplace.png) 
 
 ## Database schema:
-![Схема базы данных](images/schemaDB.png)
+![DB schema](images/schemaDB.png)
 
 ## Generated protobuf files:
 ## [marketplace-protos](https://github.com/shoksin/marketplace-protos) ##
